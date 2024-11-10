@@ -8,8 +8,12 @@ public class ReceiveData : MonoBehaviour
     UdpClient udpClient;
     IPEndPoint remoteEndPoint;
 
+    public Vector3 position;
+
     // getPointスクリプトへの参照
     public getPoint pointScript;
+
+    public float x,y,z;
 
     void Start()
     {
@@ -24,11 +28,11 @@ public class ReceiveData : MonoBehaviour
             byte[] data = udpClient.Receive(ref remoteEndPoint);
 
             // 受信したデータを浮動小数点に変換 (x, y, z)
-            float x = BitConverter.ToSingle(data, 0)/100;
-            float y = BitConverter.ToSingle(data, 4)/100;
-            float z = BitConverter.ToSingle(data, 8)/100;
+            x = BitConverter.ToSingle(data, 0)/10;
+            y = BitConverter.ToSingle(data, 4)/10;
+            z = BitConverter.ToSingle(data, 8); //mmスケールのデータを使う
 
-            Debug.Log($"Received data - X: {x}, Y: {y}, Z: {z}");
+           // Debug.Log($"Received data - X: {x}, Y: {y}, Z: {z}");
 
             // getPointスクリプトに座標を渡す
             pointScript.UpdatePosition(x, y, z);
@@ -38,5 +42,10 @@ public class ReceiveData : MonoBehaviour
     void OnApplicationQuit()
     {
         udpClient.Close();
+    }
+
+    public Vector3 sendPosition(){
+        position= new Vector3(x,y,z);   
+        return position;
     }
 }
